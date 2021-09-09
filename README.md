@@ -1,44 +1,180 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) template.
+## Cách tổ chức Form Module 
 
-## Available Scripts
+- Package: [React Hook Form](https://react-hook-form.com/)
+- Form Validation: [Yup](https://github.com/jquense/yup)
+- Helper: [Validation Resolver](https://github.com/react-hook-form/resolvers)
+- Error Message: [ErrorMessage](https://react-hook-form.com/api/useformstate/errormessage)
 
-In the project directory, you can run:
+>  npm install react-hook-form yup @hookform/resolvers @hookform/error-message
 
-### `yarn start`
+Nguyên tắc cần nhớ:
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- 1 form gồm nhiều form field.
+- Form field là cầu nối giữa form và UI control, giúp bind form values vào UI control.
+- UI control là các thẻ input, select hay các custom component của UI lib (Material UI, And Design, Reactstrap,..)
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+![Screen Shot 2021-09-09 at 22 49 37](https://user-images.githubusercontent.com/63298399/132719432-ebd5fe78-08d8-424e-b5da-fb7a415e2c74.png)
 
-### `yarn test`
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Custom Field 
 
-### `yarn build`
+- Cầu nối giữa UI control và React Hook Form.
+- UI control là một controlled component với props: 
+  - name: tên xác định control
+  - value: giá trị của control
+  - onChange: trigger hàm này với giá trị mới khi có thay đổi
+  - onBlur: xác định khi nào thì control này bị touched
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+InputField
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+```js
+import { Form, Input } from "antd";
+import React, { InputHTMLAttributes } from "react";
+import { Control, useController } from "react-hook-form";
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+export interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
+  name: string;
+  control: Control<any>;
+  label?: string;
+}
 
-### `yarn eject`
+export function InputField({ name, control, label }: InputFieldProps) {
+  const {
+    field: { onBlur, onChange, value, ref },
+    fieldState: { invalid, error },
+  } = useController({
+    name,
+    control,
+  });
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+  console.log(error?.message);
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+  return (
+    <Form.Item
+      label={label}
+      name={name}
+      help={error?.message}
+      validateStatus={invalid ? "error" : "success"}
+    >
+      <Input
+        value={value}
+        onChange={onChange}
+        onBlur={onBlur}
+        placeholder={label}
+        ref={ref}
+      />
+    </Form.Item>
+  );
+}
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```
+PasswordField
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+```js
+import { Form, Input } from "antd";
+import React, { InputHTMLAttributes } from "react";
+import { Control, useController } from "react-hook-form";
 
-## Learn More
+export interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
+  name: string;
+  control: Control<any>;
+  label?: string;
+}
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+export function PasswordField({ name, control, label }: InputFieldProps) {
+  const {
+    field: { onBlur, onChange, value, ref },
+    fieldState: { invalid, error },
+  } = useController({
+    name,
+    control,
+  });
+  return (
+    <Form.Item
+      label={label}
+      name={name}
+      help={error?.message}
+      validateStatus={invalid ? "error" : "success"}
+    >
+      <Input.Password
+        value={value}
+        onChange={onChange}
+        onBlur={onBlur}
+        placeholder={label}
+        ref={ref}
+      />
+    </Form.Item>
+  );
+}
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```
+##  Form Component
+OnboardingForm
+
+```js
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Button, Form } from "antd";
+import { InputField } from "components/FormFields/InputField";
+import { PasswordField } from "components/FormFields/PasswordField";
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
+
+export interface Account {
+  fullname: string;
+  password: string;
+}
+
+export interface AccountFormProps {
+  initialValues?: Account;
+  onSubmit?: (formValues: Account) => void;
+}
+
+const schema = yup.object().shape({
+  fullname: yup.string().required("Please enter your full name"),
+  password: yup.string().required("Please enter your password"),
+});
+
+export default function OnboardingForm({
+  initialValues,
+  onSubmit,
+}: AccountFormProps) {
+  const {
+    control,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = useForm<Account>({
+    defaultValues: initialValues,
+    resolver: yupResolver(schema),
+  });
+
+  const handleFormSubmit = async (formValues: Account) => {
+    try {
+      await onSubmit?.(formValues);
+
+      // time of loading
+      await new Promise((resolve) => {
+        setTimeout(resolve, 1000);
+      });
+    } catch (error) {
+      console.log("Failed to submit form value: ", error);
+    }
+  };
+
+  return (
+    <Form
+      onFinish={handleSubmit(handleFormSubmit)}
+      labelCol={{ span: 8 }}
+      wrapperCol={{ span: 16 }}
+    >
+      <InputField name="fullname" label="Full Name" control={control} />
+
+      <PasswordField name="password" label="Password" control={control} />
+
+      <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+        <Button block type="primary" htmlType="submit" loading={isSubmitting}>
+          Submit
+        </Button>
+      </Form.Item>
+    </Form>
+  );
+}
