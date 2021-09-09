@@ -40,10 +40,9 @@
 
 .container {
   width: 400px;
-  margin: 20px auto;
+  margin: 50px auto;
 }
 
 .title {
   text-align: center;
-  transform: translateX(50px);
 }

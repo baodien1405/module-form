@@ -19,7 +19,7 @@ function App() {
   };
   return (
     <div className="App">
-      <h1 className="title">Login Form</h1>
+      <h1>Login Form</h1>
       <div className="container">
         <OnboardingForm
           onSubmit={handleOnboardingFormSubmit}

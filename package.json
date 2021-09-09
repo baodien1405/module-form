@@ -3,20 +3,25 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@hookform/resolvers": "^2.8.0",
     "@reduxjs/toolkit": "^1.5.1",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "@types/jest": "^24.0.0",
     "@types/node": "^12.0.0",
-    "@types/react": "^16.9.0",
-    "@types/react-dom": "^16.9.0",
-    "@types/react-redux": "^7.1.7",
+    "@types/react": "^16.14.15",
+    "@types/react-dom": "^16.9.14",
+    "@types/react-router-dom": "^5.1.8",
+    "antd": "^4.16.13",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-hook-form": "^7.15.1",
     "react-redux": "^7.2.0",
+    "react-router-dom": "^5.3.0",
     "react-scripts": "4.0.3",
-    "typescript": "~4.1.5"
+    "typescript": "~4.1.5",
+    "yup": "^0.32.9"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -38,5 +43,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/react-redux": "^7.1.18"
   }
 }

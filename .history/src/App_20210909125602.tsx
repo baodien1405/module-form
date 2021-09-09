@@ -3,13 +3,13 @@ import "./App.css";
 import OnboardingForm from "./features/onboarding/component/OnboardingForm";
 
 export interface Account {
-  fullname: string;
+  name: string;
   password: string;
 }
 
 function App() {
   const initialValues: Account = {
-    fullname: "",
+    name: "",
     password: "",
   };
 
@@ -19,7 +19,6 @@ function App() {
   };
   return (
     <div className="App">
-      <h1 className="title">Login Form</h1>
       <div className="container">
         <OnboardingForm
           onSubmit={handleOnboardingFormSubmit}

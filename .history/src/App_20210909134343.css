@@ -44,6 +44,6 @@
 }
 
 .title {
-  text-align: center;
-  transform: translateX(50px);
+  width: 400px;
+  margin: 0px auto;
 }
