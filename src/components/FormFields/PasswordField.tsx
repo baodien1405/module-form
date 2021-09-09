@@ -11,13 +11,18 @@ export interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
 export function PasswordField({ name, control, label }: InputFieldProps) {
   const {
     field: { onBlur, onChange, value, ref },
-    fieldState: { error },
+    fieldState: { invalid, error },
   } = useController({
     name,
     control,
   });
   return (
-    <Form.Item label={label} name={name} rules={[{ message: error?.message }]}>
+    <Form.Item
+      label={label}
+      name={name}
+      help={error?.message}
+      validateStatus={invalid ? "error" : "success"}
+    >
       <Input.Password
         value={value}
         onChange={onChange}

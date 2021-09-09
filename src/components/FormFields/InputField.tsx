@@ -11,7 +11,7 @@ export interface InputFieldProps extends InputHTMLAttributes<HTMLInputElement> {
 export function InputField({ name, control, label }: InputFieldProps) {
   const {
     field: { onBlur, onChange, value, ref },
-    fieldState: { error },
+    fieldState: { invalid, error },
   } = useController({
     name,
     control,
@@ -23,11 +23,8 @@ export function InputField({ name, control, label }: InputFieldProps) {
     <Form.Item
       label={label}
       name={name}
-      rules={[
-        {
-          message: error?.message,
-        },
-      ]}
+      help={error?.message}
+      validateStatus={invalid ? "error" : "success"}
     >
       <Input
         value={value}
